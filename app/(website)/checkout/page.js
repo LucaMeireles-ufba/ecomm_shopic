@@ -9,11 +9,14 @@ import { GetAddressesFromUserId, createOrder, redirectToStatusPage } from './act
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'react-toastify';
 import { useSession, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const CheckoutPage = () => {
     const { data: session, status } = useSession()
     const [fullField, setFullField] = useState(false);
     const [productImage, setProductImage] = useState(null);
+    const router = useRouter();
+
 
     const checkFields = () => {
         const fields = ['zipCode', 'city', 'state', 'country', 'neighborhood', 'complement', 'number', 'street', 'full_name']; 
@@ -134,6 +137,7 @@ const CheckoutPage = () => {
         )
     }
 
+    const formattedCartTotal = cartTotal ? cartTotal.toFixed(2) : Number(0).toFixed(2);
     return (
         <>
             <div className="text-center font-bold text-2xl mb-4 mt-4">
@@ -506,11 +510,15 @@ const CheckoutPage = () => {
                             type="submit"
                             className={`w-full rounded-full my-4 py-2 px-4 ${fullField ? 'bg-blue-500' : 'bg-gray-300'}`}
                             disabled={!fullField}
-                            onClick={(e) => {
+                            onClick={async (e) => {
                                 e.preventDefault();
-                                tryCreateOrder(); 
+                                await tryCreateOrder(); // Ensure the order creation completes
+                                localStorage.setItem('price', formattedCartTotal);
+                                router.push('/payment'); // Redirect to payment page
                             }}
-                        >Fazer Pedido</button>
+                        >
+                            Fazer Pedido
+                        </button>
                     </div>
                 </div>
             </div>

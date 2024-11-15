@@ -145,6 +145,10 @@ export async function redirectToStatusPage(id) {
 
 }
 
+export async function redirectToPayment() {
+    redirect(`/payment`)
+}
+
 function updateMulti(tableName, fields, values, id) {
     const setSql = fields
         .map((field) => `"${field}" = "t"."${field}"`)

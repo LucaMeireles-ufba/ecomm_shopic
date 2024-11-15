@@ -432,8 +432,8 @@ export var users_address = [
 export var users = [
   {
     "id": "ff8eda38-a707-4013-91cb-c5e514dce983",
-    "name": "Rodrigo Cerqueira",
-    "email": "rodrigocsmoreira@gmail.com",
+    "name": "Luca Meireles",
+    "email": "luca.meireles@ufba.br",
     "role": "admin"
   },
   {

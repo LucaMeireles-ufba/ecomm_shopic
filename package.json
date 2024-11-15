@@ -39,6 +39,7 @@
     "nodemailer": "^6.9.5",
     "postcss": "8.4.28",
     "prebuild-install": "^7.1.1",
+    "qrcode-pix": "5.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
