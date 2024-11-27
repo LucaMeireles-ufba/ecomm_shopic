@@ -514,6 +514,7 @@ const CheckoutPage = () => {
                                 e.preventDefault();
                                 await tryCreateOrder(); // Ensure the order creation completes
                                 localStorage.setItem('price', formattedCartTotal);
+                                localStorage.setItem('name', address.name);
                                 router.push('/payment'); // Redirect to payment page
                             }}
                         >

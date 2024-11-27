@@ -12,15 +12,15 @@ export default function PaymentPage() {
         if (storedPrice) setPrice(parseFloat(storedPrice));
     }, []);
 
+    const username = localStorage.getItem('name')
+
     const params = {
         version: "01",
         key: "86300844560", //or any PIX key
-        name: "Fulano de Tal",
-        city: "SAO PAULO",
-        transactionId: "202101",
-        message: "MARIA APARECIDA DA SILVA SAURO E SOUZA MELO",
-        // cep: '99999999',
-        // countryCode: 'br',
+        name: username,
+        city: "Salvador",
+        transactionId: "202401",
+        message: "SHOPIC",
         value: price
     };
 
@@ -31,14 +31,13 @@ export default function PaymentPage() {
 
     return (
         <div>
-            <h1>Payment Page</h1>
-            <p>Price: R$ {price.toFixed(2)}</p>
+            <h1>Pague R$ {price.toFixed(2)} via Pix</h1>
             <div className="App">
-                <h1>QR Project</h1>
-
+                <p>Código QR:</p>
                 {showQrPix(params)}
                 {qrBase64 ? <img src={qrBase64} alt="QR PIX" /> : <div>PIX INVALIDO</div>}
             </div>
+
         </div>
     );
 }
