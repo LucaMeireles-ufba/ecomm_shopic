@@ -89,3 +89,4 @@ Em seguida, abra [http://localhost:3000](http://localhost:3000) com o seu navega
 ## Obervações
 
 Este projeto usa [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) para automaticamente otimizar e carregar Inter, uma font custom do Google Font.
+.
