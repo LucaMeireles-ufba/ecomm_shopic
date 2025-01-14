@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String? @default("")
+  email         String?   @unique
+  emailVerified DateTime?
+  role          String? @default("user")
+  addresses     Address[]
+  orders        Order[]
+  reviews       Review[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  createdAt  DateTime   @default(now())
+  users_id     String
+  total        Float
+  status       String
+  address      Address[]
+  user         User        @relation(fields: [users_id], references: [id])
+  order_items  OrderItem[]
+}
+
+model OrderItem {
+  id        Int         @id @default(autoincrement())
+  price     Float
+  orders_id Int
+  sku       String
+  quantity  Int
+  order     Order       @relation(fields: [orders_id], references: [id])
+  product   ProductItem @relation(fields: [sku], references: [sku])
+}
+
+model Address {
+  id           Int     @id @default(autoincrement())
+  users_id     String?
+  orders_id    Int?
+  type         String
+  street       String
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String?
+  state        String?
+  country      String?
+  zip_code     String?
+  name         String?
+  order        Order?  @relation(fields: [orders_id], references: [id])
+  user         User?   @relation(fields: [users_id], references: [id])
+}
+
+model Product {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  description           String
+  product_categories_id Int
+  rating                Float?
+  reviews               Review[]
+  product_item          ProductItem[]
+  product_category      ProductCategory @relation(fields: [product_categories_id], references: [id])
+}
+
+model ProductItem {
+  sku                 String      @id
+  product_id          Int
+  size                String
+  amount              Int
+  price               Float
+  order_items         OrderItem[]
+  productItem_product Product     @relation(fields: [product_id], references: [id])
+}
+
+model Review {
+  id          Int     @id @default(autoincrement())
+  title       String?
+  text        String?
+  rating      Float?
+  users_id    String
+  products_id Int
+  user        User    @relation(fields: [users_id], references: [id])
+  product     Product @relation(fields: [products_id], references: [id])
+}
+
+model ProductCategory {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  sessionToken  String   @unique
+  userId        String
+  expires       DateTime
+  cart_contents Json?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// NextAuth Schema
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  refresh_token_expires_in Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Option {
+  key   String @id
+  value String
+  type  String
+}

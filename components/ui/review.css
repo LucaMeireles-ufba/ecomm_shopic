@@ -1,0 +1,7 @@
+@tailwind components;
+
+@layer components {
+    .review-visible {
+        @apply bg-gradient-to-b from-transparent to-[#00000055] bg-[length:100%_5px] bg-no-repeat bg-bottom;
+    }
+}
