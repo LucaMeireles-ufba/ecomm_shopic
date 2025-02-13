@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth/next'
 import Email from 'next-auth/providers/email'
 import { prisma } from '@/utils/prisma'
-import { getServerSession as serverSession } from "next-auth/next"
+import { getServerSession } from "next-auth/next"
 
 function PrismaAdapter(p) {
     return {
@@ -63,7 +63,6 @@ function PrismaAdapter(p) {
     };
 }
 
-
 export const authOptions = {
     providers: [
         Email({
@@ -83,7 +82,7 @@ export const authOptions = {
     adapter: PrismaAdapter(prisma),
     secret: process.env.NEXTAUTH_SECRET,
     theme: {
-        colorScheme:"light",
+        colorScheme: "light",
         buttonText: "#ffffff",
         brandColor: "#000000",
         logo: '/static/images/logo.png'
@@ -96,7 +95,7 @@ export const authOptions = {
             session.user.role = user.role
 
             return session
-          }
+        }
     },
     events: {
         createUser(msg) {
@@ -115,10 +114,9 @@ export const authOptions = {
     }
 }
 
-
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
 
 export function getServerSession() {
-    return serverSession(authOptions)
+    return getServerSession(authOptions)
 }
