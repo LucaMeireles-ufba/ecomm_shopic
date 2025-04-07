@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'react-toastify';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { GeneratePayment } from '../payment/actions';
 
 const CheckoutPage = () => {
     const { data: session, status } = useSession()
@@ -138,6 +139,14 @@ const CheckoutPage = () => {
     }
 
     const formattedCartTotal = cartTotal ? cartTotal.toFixed(2) : Number(0).toFixed(2);
+
+    const handleRedirectToPayment = async() => {
+        const paymentUrl = await GeneratePayment(formattedCartTotal, address.name);
+        console.log('Redirecionando para o pagamento:', paymentUrl);
+        if (paymentUrl) {
+            window.location.href = paymentUrl; // Redirect to the payment URL
+        }
+    };
     return (
         <>
             <div className="text-center font-bold text-2xl mb-4 mt-4">
@@ -515,7 +524,8 @@ const CheckoutPage = () => {
                                 await tryCreateOrder(); // Ensure the order creation completes
                                 localStorage.setItem('price', formattedCartTotal);
                                 localStorage.setItem('name', address.name);
-                                router.push('/payment'); // Redirect to payment page
+                                // router.push('/payment'); // Redirect to payment page
+                                await handleRedirectToPayment();
                             }}
                         >
                             Fazer Pedido
