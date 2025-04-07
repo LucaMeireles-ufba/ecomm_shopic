@@ -1,30 +1,54 @@
 "use server";
 import { v4 as uuidv4 } from 'uuid';
-export async function GeneratePayment(price) {
-    fetch('https://api.mercadopago.com/v1/payments', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Idempotency-Key': uuidv4(),
-            'Authorization': 'Bearer APP_USR-3973403335554418-112719-85db27b22941e41d74741f7af6ed75c8-2100006760',
-        },
-        body: JSON.stringify({
-            payer: {
-                email: 'victoremannuel12@gmail.com'
+
+export async function GeneratePayment(price, email) {
+    try {
+        console.log('Criando pagamento...');
+        console.log('Preço:', price);
+        console.log('E-mail:', email);
+        // Create a payment session with AbacatePay
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer abc_dev_BAe2KjJ0fcNX3HQzsp04NbMF', // Replace with your API key
+                'Content-Type': 'application/json',
             },
-            token: uuidv4(),
-            description:"teste",
-            transaction_amount: 12.34,
-            payment_method_id: 'pix'
-        }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            // setPaymentId(data.id);
-            // setPaymentStatus(data.status);
-            console.log('Pagamento criado:', data);
-        })
-        .catch((error) => {
-            console.error('Erro ao criar pagamento:', error);
-        });
+            body: JSON.stringify({
+                frequency: 'ONE_TIME',
+                methods: ['PIX'],
+                products: [
+                    {
+                        externalId: `prod-${uuidv4()}`,
+                        name: email || 'Produto',
+                        description: 'Pagamento único via Pix',
+                        quantity: 1,
+                        price: parseInt(parseFloat(price) * 100), // Convert to cents
+                    },
+                ],
+                returnUrl: 'https://yourwebsite.com/payment-return', // Replace with your return URL
+                completionUrl: 'https://yourwebsite.com/payment-completion', // Replace with your completion URL
+                customer: {
+                    name: email || 'Cliente',
+                    cellphone: "(11) 4002-8922",
+                    email: 'cliente@exemplo.com', // Replace with dynamic email if available
+                    taxId: '245.313.790-55', // Replace with dynamic tax ID if available
+                },
+            }),
+        };
+
+        const response = await fetch('https://api.abacatepay.com/v1/billing/create', options)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Erro ao criar pagamento:', error);
+            });
+
+        console.log('Pagamento criado:', response);
+        return response.data.url;
+    
+    } catch (error) {
+        console.error('Erro ao criar pagamento:', error);
+        throw error;
+    }
 }
+
+
