@@ -1,68 +1,47 @@
 'use client';
+
 import { useEffect, useState } from 'react';
-import { GeneratePayment } from './actions';
+import { QrCodePix } from "qrcode-pix";
 
 export default function PaymentPage() {
     const [price, setPrice] = useState(0);
-    const [name, setName] = useState('');
-    const [paymentUrl, setPaymentUrl] = useState('');
-    const [showPaymentComponent, setShowPaymentComponent] = useState(true);
+    const [qrBase64, setQrBase64] = useState("");
 
     useEffect(() => {
-        const fetchPaymentUrl = async () => {
-            const storedPrice = localStorage.getItem('price');
-            const storedUsername = localStorage.getItem('name');
-            if (storedPrice) setPrice(parseFloat(storedPrice));
-            if (storedUsername) setName(storedUsername);
-
-            if (storedPrice && storedUsername) {
-                try {
-                    const responseAPI = await GeneratePayment(storedPrice, storedUsername);
-                    console.log(responseAPI);
-                    setPaymentUrl(responseAPI);
-                } catch (error) {
-                    console.error('Error generating payment:', error);
-                }
-            }
-        };
-
-        fetchPaymentUrl();
+        const storedPrice = localStorage.getItem('price');
+        if (storedPrice) setPrice(parseFloat(storedPrice));
     }, []);
 
-    const handleRedirectToPayment = () => {
-        console.log('Redirecionando para o pagamento:', paymentUrl);
-        if (paymentUrl) {
-            window.location.href = paymentUrl; // Redirect to the payment URL
-        }
+    const username = localStorage.getItem('name')
+
+    const params = {
+        version: "01",
+        key: "86300844560", //or any PIX key
+        name: username,
+        city: "Salvador",
+        transactionId: "202401",
+        message: "SHOPIC",
+
+
+        value: price
     };
 
+    function showQrPix(context) {
+        const pixQR = QrCodePix(context);
+        pixQR.base64().then(setQrBase64);
+    }
+
     return (
-        <div style={{ height: '70vh' }}>
-            {showPaymentComponent && paymentUrl && (
-                <>
-                    <h1>{name}, pague R${price.toFixed(2)} via AbacatePay</h1>
-                    <button
-                        onClick={handleRedirectToPayment}
-                        style={{
-                            backgroundColor: '#007bff',
-                            color: '#fff',
-                            padding: '10px 20px',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        Ir para o pagamento
-                    </button>
-                </>
-            )}
-            {!showPaymentComponent && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                    <p>
-                        <strong style={{ color: 'green' }}>Pagamento criado com sucesso!</strong>
-                    </p>
-                </div>
-            )}
+        <div>
+            <h1>Pague R$ {price.toFixed(2)} via Pix</h1>
+
+            <div className="App">
+                <p>Código QR:</p>
+
+                {showQrPix(params)}
+                {qrBase64 ? <img src={qrBase64} alt="QR PIX" /> : <div>PIX INVALIDO</div>}
+            </div>
+
         </div>
     );
 }

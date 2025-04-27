@@ -41,7 +41,7 @@ export const CartProvider = ({ children }) => {
         found = item
     }
     if (!found) {
-      toast.error("Selecione um SKU primeiro")
+      // toast.error("Selecione um SKU primeiro")
       return null
     }
     const existingCartItemIndex = cartItems.findIndex(

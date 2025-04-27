@@ -80,7 +80,9 @@ export default async function Produto({ params, searchParams }) {
 					<h1 className="text-4xl">{produto.name}</h1>
 					<RenderStars rating={produto.rating}></RenderStars>
 					<span className="text-lg">
-						{minPrice != maxPrice ? (
+						{maxPrice === -1 ? (
+							<>Produto indisponível</>
+						) : minPrice !== maxPrice ? (
 							<>
 								R${minPrice.toFixed(2)} - R${maxPrice.toFixed(2)}
 							</>
@@ -90,7 +92,9 @@ export default async function Produto({ params, searchParams }) {
 					</span>
 					<p>{produto.description}</p>
 					<hr className="my-4"></hr>
-					<Filtros produto={produto}></Filtros>
+					{produto && produto.product_item && produto.product_item.length > 0 && (
+						<Filtros produto={produto}></Filtros>
+					)}
 				</section>
 			</div>
 
