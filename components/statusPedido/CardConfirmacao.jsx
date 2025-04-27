@@ -1,4 +1,5 @@
 'use client'
+import React, { useEffect, useState } from 'react';
 import {
 	Table,
 	TableBody,
@@ -6,19 +7,44 @@ import {
 	TableHead,
 	TableHeaderCell,
 	TableRow,
-} from '@tremor/react'
-import React from 'react'
+} from '@tremor/react';
+import { QrCodePix } from 'qrcode-pix';
 
-export default async function CardConfirmacao(props) {
+export default function CardConfirmacao(props) {
 
-	const pedido = props.pedido
+	const pedido = props.pedido;
 
-	const produtos = pedido.order_items
-	const user = pedido.user
-	const adress = pedido.address
+	const produtos = pedido.order_items;
+	const user = pedido.user;
+	const adress = pedido.address;
+	const [price, setPrice] = useState(0);
+	const [qrBase64, setQrBase64] = useState('');
+	const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+
+	useEffect(() => {
+		const storedPrice = localStorage.getItem('price');
+		if (storedPrice) setPrice(parseFloat(storedPrice));
+	}, []);
+
+	const username = localStorage.getItem('name');
+
+	const params = {
+		version: '01',
+		key: '86300844560', //or any PIX key
+		name: username,
+		city: 'Salvador',
+		transactionId: '202401',
+		message: 'SHOPIC',
+		value: price,
+	};
+
+	function showQrPix(context) {
+		const pixQR = QrCodePix(context);
+		pixQR.base64().then(setQrBase64);
+	}
 
 	return (
-		<div className="bg-white  flex flex-col items-center  shadow-lg h-4/5 w-full py-5">
+		<div className="bg-white flex flex-col items-center shadow-lg h-4/5 w-full py-5">
 			{pedido.status === 'completed' ||
 			pedido.status === 'shipped' ||
 			pedido.status === 'delivered' ? (
@@ -58,11 +84,11 @@ export default async function CardConfirmacao(props) {
 						</p>
 						<p className="text-yellow-700">
 							Obrigado por comprar conosco <strong>{user.name}</strong>.
-							<br></br>
+							<br />
 							Seu pedido está aguardando pagamento. Após a confirmação,
-							começaremos a preparar sua compra com carinho. <br></br>
-							<br></br> Agradecemos por escolher a nossa loja! Em breve
-							você receberá um email no endereço
+							começaremos a preparar sua compra com carinho. <br />
+							<br /> Agradecemos por escolher a nossa loja! Em breve você
+							receberá um email no endereço
 							<strong> {user.email} </strong>
 							com todos os detalhes do pedido
 						</p>
@@ -71,7 +97,43 @@ export default async function CardConfirmacao(props) {
 								<strong>⏳ Aguardando Pagamento </strong>
 							</p>
 						</div>
+						<div className="p-4 h-auto md:h-2/6 w-auto md:w-2/3 rounded-sm justify-center">
+							<div className="flex justify-center text-white">
+								{showQrPix(params)}
+								{qrBase64 ? (
+									<img src={qrBase64} alt="QR PIX" />
+								) : (
+									<div>PIX INVALIDO</div>
+								)}
+							</div>
+							<div className="flex justify-center mt-4">
+								<button
+									className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+									onClick={() => setIsModalOpen(true)} // Open modal on click
+								>
+									Enviar Comprovante
+								</button>
+							</div>
+						</div>
 					</div>
+
+					{/* Modal */}
+					{isModalOpen && (
+						<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+							<div className="bg-white p-6 rounded shadow-lg">
+								<p className="text-lg font-bold">Modal Aberto</p>
+								<p>Este é um modal simples.</p>
+								<div className="flex justify-end mt-4">
+									<button
+										className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+										onClick={() => setIsModalOpen(false)} // Close modal on click
+									>
+										Fechar
+									</button>
+								</div>
+							</div>
+						</div>
+					)}
 				</React.Fragment>
 			) : pedido.status === 'canceled' ? (
 				<React.Fragment>

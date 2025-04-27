@@ -81,6 +81,9 @@ const CheckoutPage = () => {
         setSelectedOption(event.currentTarget.value)
     }
 
+    const redirectToStatusPage2 = (orderId) => {
+        router.push(`/statusPedido/${orderId}`); 
+    };
     async function tryCreateOrder() {
         let res = await createOrder({ user: session.user.id, billing_address: address, shipping_same_as_billing: !multipleAddresses, shipping_address: address2, gateway: { name: selectedOption }, cart: cartItems, total: cartTotal })
         if (res) {
@@ -88,11 +91,11 @@ const CheckoutPage = () => {
                 toast.success('Pedido criado com sucesso!')
                 cartItems.forEach(elemento => {
                     removeFromCart(elemento.item.sku);
-                  });
-                  clearCart()
+                });
+                clearCart()
 
 
-                redirectToStatusPage(res.order.id)
+                redirectToStatusPage2(res.order.id)
             } else if (res.error) {
                 toast.error('Erro ao criar o pedido. ' + res.error)
             } else {
@@ -525,7 +528,7 @@ const CheckoutPage = () => {
                                 localStorage.setItem('price', formattedCartTotal);
                                 localStorage.setItem('name', address.name);
                                 // router.push('/payment'); // Redirect to payment page
-                                await handleRedirectToPayment();
+                                // await handleRedirectToPayment();
                             }}
                         >
                             Fazer Pedido
