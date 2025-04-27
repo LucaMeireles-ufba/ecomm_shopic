@@ -79,7 +79,12 @@ export default function CardConfirmacao(props) {
 					</div>
 
 					<div className="bg-yellow-100 p-4 h-auto md:h-2/6 border border-yellow-400 w-auto md:w-2/3 rounded-sm">
-						<p className="text-yellow-800">
+						<div className="flex items-center bg-yellow-500 h-auto md:h-2/6 border border-yellow-400 w-auto md:w-full rounded">
+							<p className="text-green-50">
+								<strong>⏳ Aguardando Pagamento </strong>
+							</p>
+						</div>
+						<p className="text-yellow-800 mt-6">
 							<strong>Seu pedido foi realizado com sucesso.</strong>
 						</p>
 						<p className="text-yellow-700">
@@ -92,12 +97,7 @@ export default function CardConfirmacao(props) {
 							<strong> {user.email} </strong>
 							com todos os detalhes do pedido
 						</p>
-						<div className="flex items-center bg-yellow-500 h-auto md:h-2/6 border border-yellow-400 w-auto md:w-full mt-8">
-							<p className="text-green-50">
-								<strong>⏳ Aguardando Pagamento </strong>
-							</p>
-						</div>
-						<div className="p-4 h-auto md:h-2/6 w-auto md:w-2/3 rounded-sm justify-center">
+						<div className="p-4 h-auto md:h-2/6 w-auto md:w-full rounded-sm justify-center">
 							<div className="flex justify-center text-white">
 								{showQrPix(params)}
 								{qrBase64 ? (
@@ -108,7 +108,7 @@ export default function CardConfirmacao(props) {
 							</div>
 							<div className="flex justify-center mt-4">
 								<button
-									className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+									className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
 									onClick={() => setIsModalOpen(true)} // Open modal on click
 								>
 									Enviar Comprovante
