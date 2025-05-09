@@ -33,3 +33,23 @@ export async function GeneratePayment(price, email) {
     }
 }
 
+export async function handler() {
+    const { CopyAndPaste } = require("pixjs");
+
+    const data = {
+        name: "Tiago Dias Laureano", // Receptor name
+        key: "86300844560", // The pix key
+        amount: 1.0, // Amount
+        city: "Salvador", // String without special characters ex: Sao Paulo
+        id: "PAGAMENTO", // Payment identifier
+        type: "cpf", // "email" | "phone" | "cpf" | "cnpj" | "random"
+    };
+
+    const copyAndPaste = CopyAndPaste(data);
+
+    return {
+        message: "Your Copy and Paste has been generated",
+        payload: copyAndPaste,
+        data,
+    };
+}

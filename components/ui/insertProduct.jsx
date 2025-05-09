@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { toast } from 'react-toastify';
 import UploadImagePage from '@/components/admin/uploadImage';
+import EditableProductTable from '../admin/editableTable/editableProductTable';
 
 const ReturnComponent = ({ dados }) => {
     const handleFormSubmit = async (formValues) => {
@@ -93,7 +94,7 @@ const ReturnComponent = ({ dados }) => {
       {/* Editable */}
       <div className="flex justify-center items-center w-full">
       <div className="w-full overflow-x-auto">
-          <EditableTable
+          <EditableProductTable
             title="Sub-produtos"
             headers={headers}
             data={productsItem}

@@ -85,15 +85,17 @@ export default function Filtros({ produto }) {
 				>
 					{produto.product_item.map((item, index) => {
 						return (
-							<ToggleGroup.Button
-								key={item.sku}
-								value={item.sku}
-                                onClick={() => setEnable(item.amount < 1)}
-								className="px-6 rounded-full"
-							>
-								{item.size}
-							</ToggleGroup.Button>
-						)
+							item.sku && ( // Only render if item.sku is not empty
+								<ToggleGroup.Button
+									key={item.sku}
+									value={item.sku}
+									onClick={() => setEnable(item.amount < 1)}
+									className="px-6 rounded-full"
+								>
+									{item.size}
+								</ToggleGroup.Button>
+							)
+						);
 					})}
 				</ToggleGroup.Root>
 			</div>

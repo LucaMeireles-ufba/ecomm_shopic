@@ -11,23 +11,53 @@ import {
 import { QrCodePix } from 'qrcode-pix';
 
 export default function CardConfirmacao(props) {
-
 	const pedido = props.pedido;
-
 	const produtos = pedido.order_items;
 	const user = pedido.user;
 	const adress = pedido.address;
 	const [price, setPrice] = useState(0);
 	const [qrBase64, setQrBase64] = useState('');
-	const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [pixPayload, setPixPayload] = useState('');
+	const username = localStorage.getItem('name');
+
 
 	useEffect(() => {
 		const storedPrice = localStorage.getItem('price');
 		if (storedPrice) setPrice(parseFloat(storedPrice));
 	}, []);
 
-	const username = localStorage.getItem('name');
+	useEffect(() => {
+        // Fetch PIX payload from the API
+        async function fetchPixPayload() {
+            try {
+                const response = await fetch('/api/generatePix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: 'username' || 'Default Name',
+                        key: '86300844560',
+                        amount: price,
+                        city: 'Salvador',
+                        id: '202401',
+                    }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setPixPayload(data.payload.payload);
+                } else {
+                    console.error(data.error);
+                }
+            } catch (error) {
+                console.error('Failed to fetch PIX payload:', error);
+            }
+        }
 
+        if (price > 0) {
+            fetchPixPayload();
+        }
+    }, [price, username]);
+	
 	const params = {
 		version: '01',
 		key: '86300844560', //or any PIX key
@@ -108,7 +138,22 @@ export default function CardConfirmacao(props) {
 							</div>
 							<div className="flex justify-center mt-4">
 								<button
-									className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+									className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 w-48"
+									onClick={() => {
+										if (pixPayload) {
+											navigator.clipboard.writeText(pixPayload); // Copy only the payload field
+											alert('Código PIX copiado com sucesso!'); // Optional: Show confirmation
+										} else {
+											alert('Erro: Código PIX não disponível.');
+										}
+									}}
+								>
+									Copiar Código PIX
+								</button>
+							</div>
+							<div className="flex justify-center mt-4">
+								<button
+									className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 w-48"
 									onClick={() => setIsModalOpen(true)} // Open modal on click
 								>
 									Enviar Comprovante
@@ -121,8 +166,8 @@ export default function CardConfirmacao(props) {
 					{isModalOpen && (
 						<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
 							<div className="bg-white p-6 rounded shadow-lg">
-								<p className="text-lg font-bold">Modal Aberto</p>
-								<p>Este é um modal simples.</p>
+								<p className="text-lg font-bold">Comprovante de pagamento</p>
+								<p>Envie o comprovante de pagamento para <b>luca.meireles@ufba.br</b>.</p>
 								<div className="flex justify-end mt-4">
 									<button
 										className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"

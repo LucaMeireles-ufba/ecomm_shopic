@@ -28,46 +28,57 @@ async function createProduct(data) {
 }
 
 async function createProductItem(data) {
-	const session = await getServerSession()
+    const session = await getServerSession();
     if (!session || !session.user.role || session.user.role != "admin") {
-        return false
+        return false;
     }
     try {
-   
-  
-      const { sku, size, amount, price, product_id } = data;
-  
-      // Criar o produto usando o Prisma
-      await prisma.productItem.create({
-        data: {
-          sku: sku,
-          size: size,
-          amount: parseInt(amount),
-          price: parseFloat(price),
-          productItem_product: {
-            connect: {
-              id: parseInt(product_id),
+        const { sku, size, amount, price, product_id } = data;
+
+        // Validate that SKU is not null or empty
+        if (!sku || sku.trim() === "") {
+            return { success: false, message: "SKU não pode ser vazio." };
+        }
+
+        // Check if SKU already exists
+        const existingProductItem = await prisma.productItem.findUnique({
+            where: { sku: sku },
+        });
+        if (existingProductItem) {
+            return { success: false, message: "SKU já existe. Por favor, use um SKU único." };
+        }
+
+        // Create the product item using Prisma
+        await prisma.productItem.create({
+            data: {
+                sku: sku,
+                size: size,
+                amount: parseInt(amount),
+                price: parseFloat(price),
+                productItem_product: {
+                    connect: {
+                        id: parseInt(product_id),
+                    },
+                },
             },
-          },
-        },
-      });
-  
-      // Após criar o produto com sucesso, você pode chamar revalidatePath
-      revalidatePath(`/admin/products/$1/productsItem/add`);
-  
-      // Retornar um objeto de sucesso, se necessário
-      return { success: true, message: 'Produto criado com sucesso!' };
+        });
+
+        // Revalidate the path after successful creation
+        revalidatePath(`/admin/products/$1/productsItem/add`);
+
+        // Return a success object
+        return { success: true, message: "Produto criado com sucesso!" };
     } catch (error) {
-        if (error.constructor.name === 'PrismaClientKnownRequestError') {
-            // Lidar com o erro específico do Prisma
-            if (error.code === 'P2002') {
-              return { success: false, message: 'Erro ao criar o produto: SKU duplicado.' };
+        if (error.constructor.name === "PrismaClientKnownRequestError") {
+            // Handle specific Prisma errors
+            if (error.code === "P2002") {
+                return { success: false, message: "Erro ao criar o produto: SKU duplicado." };
             }
         }
 
-      return { success: false, message: 'Erro ao criar o produto.'};
+        return { success: false, message: "Erro ao criar o produto." };
     }
-    }
+}
   
   
 async function updateProduct(data) {
