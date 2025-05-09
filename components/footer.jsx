@@ -12,12 +12,12 @@ export default function Footer() {
 	async function getContact() {
 		const response = await getContactDB()
 
-		if(response.length > 0){
-			
+		if (response.length > 0) {
+
 			setName(response[0].name)
 			setEmail(response[1].email)
 		}
-		
+
 	}
 
 	useEffect(() => {
@@ -26,7 +26,7 @@ export default function Footer() {
 
 	return (
 		<footer className="bg-zinc-100 py-20 w-full px-8">
-			<div className="max-w-7xl mx-auto flex justify-between">
+			<div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-12 md:gap-0 justify-between">
 				<div className="flex flex-col gap-8">
 					<div className="flex flex-col gap-6">
 						<h2 className="text-3xl font-black">
@@ -63,43 +63,44 @@ export default function Footer() {
 					</div>
 				</div>
 
-				<FooterColumn
-					title="Empresa"
-					links={[
-						{ name: 'Sobre', url: '/' },
-						{ name: 'Recurso', url: '/' },
-						{ name: 'Coleção', url: '/' },
-						{ name: 'Carreira', url: '/' },
-					]}
-				/>
-				<FooterColumn
-					title="Ajuda"
-					links={[
-						{ name: 'Atendimento ao Cliente', url: '/' },
-						{ name: 'Detalhes da Entrega', url: '/' },
-						{ name: 'Termos & Condições', url: '/' },
-						{ name: 'Política de Privacidade', url: '/' },
-					]}
-				/>
-				<FooterColumn
-					title="FAQ"
-					links={[
-						{ name: 'Conta', url: '/' },
-						{ name: 'Gerenciar Entregas', url: '/' },
-						{ name: 'Pedidos', url: '/' },
-						{ name: 'Pagamentos', url: '/' },
-					]}
-				/>
-
-				<FooterColumn
-					title="Recursos"
-					links={[
-						{ name: 'eBooks Gratuitos', url: '/' },
-						{ name: 'Tutorial de Desenvolvimento', url: '/' },
-						{ name: 'Como fazer - Blog', url: '/' },
-						{ name: 'Lista de Reprodução', url: '/' },
-					]}
-				/>
+				<div className="flex flex-wrap gap-12 md:gap-20">
+					<FooterColumn
+						title="Empresa"
+						links={[
+							{ name: 'Sobre', url: '/' },
+							{ name: 'Recurso', url: '/' },
+							{ name: 'Coleção', url: '/' },
+							{ name: 'Carreira', url: '/' },
+						]}
+					/>
+					<FooterColumn
+						title="Ajuda"
+						links={[
+							{ name: 'Atendimento ao Cliente', url: '/' },
+							{ name: 'Detalhes da Entrega', url: '/' },
+							{ name: 'Termos & Condições', url: '/' },
+							{ name: 'Política de Privacidade', url: '/' },
+						]}
+					/>
+					<FooterColumn
+						title="FAQ"
+						links={[
+							{ name: 'Conta', url: '/' },
+							{ name: 'Gerenciar Entregas', url: '/' },
+							{ name: 'Pedidos', url: '/' },
+							{ name: 'Pagamentos', url: '/' },
+						]}
+					/>
+					<FooterColumn
+						title="Recursos"
+						links={[
+							{ name: 'eBooks Gratuitos', url: '/' },
+							{ name: 'Tutorial de Desenvolvimento', url: '/' },
+							{ name: 'Como fazer - Blog', url: '/' },
+							{ name: 'Lista de Reprodução', url: '/' },
+						]}
+					/>
+				</div>
 			</div>
 		</footer>
 	)
