@@ -14,8 +14,8 @@ export default function Cart() {
 			) : (
 				<>
 					{/* Cabeçalho da tabela */}
-					<div className="hidden sm:grid grid-cols-5 gap-5 text-sm text-center font-bold border-b pb-2">
-						<div>Imagem</div>
+					<div className="hidden sm:grid grid-cols-4 gap-5 text-sm text-center font-bold border-b pb-2">
+						{/* <div>Imagem</div> */}
 						<div>Nome do Produto</div>
 						<div>Quantidade</div>
 						<div>Preço</div>
@@ -25,16 +25,16 @@ export default function Cart() {
 					{/* Itens do carrinho */}
 					<div className="grid gap-5 mt-5">
 						{cartItems.map((item) => (
-							<div key={item.item.sku} className="grid sm:grid-cols-5 grid-cols-1 gap-4 border-b pb-5">
+							<div key={item.item.sku} className="grid sm:grid-cols-4 grid-cols-1 gap-4 border-b pb-5">
 								{/* Imagem */}
-								<div className="text-center">
+								{/* <div className="text-center">
 									<img src={item.item.imageUrl} alt={item.item.name} className="w-20 h-20 object-cover mx-auto" />
-								</div>
+								</div> */}
 
 								{/* Nome do Produto */}
 								<div className="text-center">
 									<span className="sm:hidden font-bold">Nome Produto: </span>
-									<span>{item.item.name}</span>
+									<span>{item.product.name}</span>
 								</div>
 
 								{/* Quantidade */}
