@@ -454,7 +454,7 @@ const CheckoutPage = () => {
                     }
 
                     {/* Métodos de Pagamento */}
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg font-semibold mb-2">Métodos de Pagamento</h2>
 
@@ -470,7 +470,7 @@ const CheckoutPage = () => {
                                     />)
                             })}
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Lista de Itens */}
                     <div className="bg-white p-4 rounded shadow">

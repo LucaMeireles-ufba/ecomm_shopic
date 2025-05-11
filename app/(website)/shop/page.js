@@ -86,7 +86,9 @@ export default function Shop({searchParams}) {
   
   return (
     <div className="px-8 w-full flex py-16">
-      <Sidebar />
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
       <div className="min-h-screen flex flex-col items-center justify-start gap-16 mx-4">
         {(categoryId && searchParams.categoryName) ? (
           <h1 className="text-2xl font-bold mb-4">{searchParams.categoryName.charAt(0).toUpperCase() + searchParams.categoryName.slice(1)}</h1>
