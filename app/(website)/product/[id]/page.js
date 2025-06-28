@@ -10,6 +10,11 @@ import { ref, getDownloadURL, listAll } from "@firebase/storage";
 import { storage } from "@/firebase";
 
 export default async function Produto({ params, searchParams }) {
+	const staticImages = [
+		'/static/images/default-image1.png',
+		'/static/images/default-image2.png',
+		'/static/images/default-image3.png',
+	];
 	const page = searchParams.page ? parseInt(searchParams.page) : 1
 	const take = 6
 	let pages = await prisma.review.count({
@@ -31,7 +36,7 @@ export default async function Produto({ params, searchParams }) {
 		return imageURLs;
 	};
 
-	const imageURLs = await getAllImageURLs();
+	// const imageURLs = await getRandomDefaultImage();
 
 	pages = Math.ceil(pages / take)
 	const produto = await prisma.product.findFirst({
@@ -65,14 +70,7 @@ export default async function Produto({ params, searchParams }) {
 			<div className="flex flex-col lg:flex-row gap-8">
 				<div className="w-full lg:w-1/2">
 					<Carousel
-						images={imageURLs.length > 0 ? imageURLs : [
-							"/static/images/default-image2.png",
-							"/static/images/default-image2.png",
-							"/static/images/default-image3.png",
-							"/static/images/default-image1.png",
-							"/static/images/default-image2.png",
-							"/static/images/default-image3.png",
-						]}
+						images={staticImages}
 					/>
 				</div>
 
