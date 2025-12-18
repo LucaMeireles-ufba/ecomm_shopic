@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
 	Table,
 	TableBody,
@@ -8,90 +8,30 @@ import {
 	TableHeaderCell,
 	TableRow,
 } from '@tremor/react';
-import { QrCodePix } from 'qrcode-pix';
 
 export default function CardConfirmacao(props) {
 	const pedido = props.pedido;
 	const produtos = pedido.order_items;
 	const user = pedido.user;
 	const adress = pedido.address;
-	const [price, setPrice] = useState(0);
-	const [qrBase64, setQrBase64] = useState('');
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [pixPayload, setPixPayload] = useState('');
-	const username = localStorage.getItem('name');
 
-
-	useEffect(() => {
-		const storedPrice = localStorage.getItem('price');
-		if (storedPrice) setPrice(parseFloat(storedPrice));
-	}, []);
-
-	useEffect(() => {
-        // Fetch PIX payload from the API
-        async function fetchPixPayload() {
-            try {
-                const response = await fetch('/api/generatePix', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: 'username' || 'Default Name',
-                        key: '86300844560',
-                        amount: price,
-                        city: 'Salvador',
-                        id: '202401',
-                    }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    setPixPayload(data.payload.payload);
-                } else {
-                    console.error(data.error);
-                }
-            } catch (error) {
-                console.error('Failed to fetch PIX payload:', error);
-            }
-        }
-
-        if (price > 0) {
-            fetchPixPayload();
-        }
-    }, [price, username]);
-	
-	const params = {
-		version: '01',
-		key: '86300844560', //or any PIX key
-		name: username,
-		city: 'Salvador',
-		transactionId: '202401',
-		message: 'SHOPIC',
-		value: price,
-	};
-
-	function showQrPix(context) {
-		const pixQR = QrCodePix(context);
-		pixQR.base64().then(setQrBase64);
-	}
 
 	return (
-		<div className="bg-white flex flex-col items-center shadow-lg h-4/5 w-full py-5">
+		<div className="bg-white flex flex-col items-center shadow-lg min-h-screen w-full py-8 px-4">
 			{pedido.status === 'completed' ||
-			pedido.status === 'shipped' ||
-			pedido.status === 'delivered' ? (
+				pedido.status === 'shipped' ||
+				pedido.status === 'delivered' ? (
 				<React.Fragment>
-					<div className="text-start font-bold text-2xl mb-4">
+					<div className="text-start font-bold text-2xl mb-4 w-full max-w-4xl">
 						<h2>Pedido Confirmado</h2>
 					</div>
 
-					<div className="bg-green-100 p-4 h-auto md:h-2/6 border border-green-400 w-auto md:w-2/3 rounded-sm">
+					<div className="bg-green-100 p-6 h-auto border border-green-400 w-full max-w-4xl rounded-sm mb-6">
 						<p className="text-green-800">
 							<strong>Seu pedido foi realizado com sucesso.</strong>
 						</p>
 						<p className="text-green-700">
 							Obrigado por comprar conosco <strong>{user.name}</strong>.
-							Em breve você receberá um email no endereço
-							<strong> {user.email} </strong>
-							com todos os detalhes do pedido
 						</p>
 						<div className="flex items-center bg-green-500 h-auto md:h-2/6 border border-green-400 w-auto md:w-full mt-8">
 							<p className="text-green-50">
@@ -101,92 +41,30 @@ export default function CardConfirmacao(props) {
 					</div>
 				</React.Fragment>
 			) : pedido.status === 'payment-pending' ||
-			  pedido.status === 'processing' ||
-			  pedido.status === 'waiting' ? (
+				pedido.status === 'pending_verification' ||
+				pedido.status === 'processing' ||
+				pedido.status === 'waiting' ? (
 				<React.Fragment>
-					<div className="text-start font-bold text-2xl mb-4">
+					<div className="text-start font-bold text-2xl mb-4 w-full max-w-4xl">
 						<h2>Pedido Confirmado</h2>
 					</div>
 
-					<div className="bg-yellow-100 p-4 h-auto md:h-2/6 border border-yellow-400 w-auto md:w-2/3 rounded-sm">
-						<div className="flex items-center bg-yellow-500 h-auto md:h-2/6 border border-yellow-400 w-auto md:w-full rounded">
-							<p className="text-green-50">
-								<strong>⏳ Aguardando Pagamento </strong>
-							</p>
-						</div>
-						<p className="text-yellow-800 mt-6">
+					<div className="bg-yellow-100 p-6 h-auto border border-yellow-400 w-full max-w-4xl rounded-sm mb-6">
+						<p className="text-yellow-800">
 							<strong>Seu pedido foi realizado com sucesso.</strong>
 						</p>
 						<p className="text-yellow-700">
 							Obrigado por comprar conosco <strong>{user.name}</strong>.
-							<br />
-							Seu pedido está aguardando pagamento. Após a confirmação,
-							começaremos a preparar sua compra com carinho. <br />
-							<br /> Agradecemos por escolher a nossa loja! Em breve você
-							receberá um email no endereço
-							<strong> {user.email} </strong>
-							com todos os detalhes do pedido
 						</p>
-						<div className="p-4 h-auto md:h-2/6 w-auto md:w-full rounded-sm justify-center">
-							<div className="flex justify-center text-white">
-								{showQrPix(params)}
-								{qrBase64 ? (
-									<img src={qrBase64} alt="QR PIX" />
-								) : (
-									<div>PIX INVALIDO</div>
-								)}
-							</div>
-							<div className="flex justify-center mt-4">
-								<button
-									className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 w-48"
-									onClick={() => {
-										if (pixPayload) {
-											navigator.clipboard.writeText(pixPayload); // Copy only the payload field
-											alert('Código PIX copiado com sucesso!'); // Optional: Show confirmation
-										} else {
-											alert('Erro: Código PIX não disponível.');
-										}
-									}}
-								>
-									Copiar Código PIX
-								</button>
-							</div>
-							<div className="flex justify-center mt-4">
-								<button
-									className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 w-48"
-									onClick={() => setIsModalOpen(true)} // Open modal on click
-								>
-									Enviar Comprovante
-								</button>
-							</div>
-						</div>
 					</div>
-
-					{/* Modal */}
-					{isModalOpen && (
-						<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-							<div className="bg-white p-6 rounded shadow-lg">
-								<p className="text-lg font-bold">Comprovante de pagamento</p>
-								<p>Envie o comprovante de pagamento para <b>luca.meireles@ufba.br</b>.</p>
-								<div className="flex justify-end mt-4">
-									<button
-										className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-										onClick={() => setIsModalOpen(false)} // Close modal on click
-									>
-										Fechar
-									</button>
-								</div>
-							</div>
-						</div>
-					)}
 				</React.Fragment>
 			) : pedido.status === 'canceled' ? (
 				<React.Fragment>
-					<div className="text-start font-bold text-2xl mb-4">
+					<div className="text-start font-bold text-2xl mb-4 w-full max-w-4xl">
 						<h2>Pedido Cancelado</h2>
 					</div>
 
-					<div className="bg-red-100 p-4 h-auto md:h-2/6 border border-red-400 w-auto md:w-2/3 rounded-sm">
+					<div className="bg-red-100 p-6 h-auto border border-red-400 w-full max-w-4xl rounded-sm mb-6">
 						<p className="text-red-800">
 							{' '}
 							<strong></strong>
@@ -216,9 +94,7 @@ export default function CardConfirmacao(props) {
 				</React.Fragment>
 			) : null}
 
-			<br></br>
-
-			<div className=" p-4 h-auto md:h-2/6 border border-black w-auto md:w-2/3 rounded-sm ">
+			<div className="p-6 h-auto border border-black w-full max-w-4xl rounded-sm mb-6">
 				<h4 className="font-bold">Informações Do Pedido</h4>
 				<br></br>
 				<p> Numero do pedido: {pedido.order_number}</p>
@@ -256,15 +132,9 @@ export default function CardConfirmacao(props) {
 					{' '}
 					Total: <strong>R${pedido.total}</strong>
 				</div>
-
-				<br></br>
-				<p>
-					*Os produtos serão enviados em até 2 dias após a confirmação do
-					pagamento.
-				</p>
 			</div>
-			<div className=" p-4 h-auto md:h-2/6 border border-black w-auto md:w-2/3 rounded-sm ">
-				<h4 className="font-bold">Informações de Cobrança</h4>
+			<div className="p-6 h-auto border border-black w-full max-w-4xl rounded-sm">
+				<h4 className="font-bold">Informações de cobrança</h4>
 
 				<p>{user.name}</p>
 				<p>Cep: {adress[0].zip_code}</p>

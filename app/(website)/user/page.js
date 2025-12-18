@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useTransition } from 'react';
 import { updateUser } from './actions';
 import UserOrders from "@/app/(website)/user/userOrders"
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import { toast } from 'react-toastify';
 import { getUserAddressById } from './actions';
 
@@ -41,9 +41,12 @@ const ProfileEditComponent = ({ params }) => {
   
   useEffect(() => {
     if (session) {
-  
-      setFormData(session.user)
-
+      setFormData({
+        name: session.user.name || '',
+        email: session.user.email || '',
+        cpf: session.user.cpf || '',
+        phone: session.user.phone || ''
+      })
     }
   }, [session])
 
@@ -57,10 +60,13 @@ const ProfileEditComponent = ({ params }) => {
       startTransision(async () => {
       
         const res = await updateUser(formData,address)
-        if (res)
+        if (res) {
           toast.success("Perfil atualizado com sucesso")
-        else
+          // Recarregar a sessão para atualizar os dados
+          window.location.reload()
+        } else {
           toast.error("Erro ao atualizar o seu perfil")
+        }
       })
     }
   }
@@ -69,8 +75,8 @@ const ProfileEditComponent = ({ params }) => {
   if (status == "authenticated") {
 
     return (
-      <div className='flex my-10 gap-4 max-w-7xl w-full'>
-        <div className="max-w-md mx-auto bg-white rounded-lg p-8 border">
+      <div className='flex flex-col lg:flex-row my-10 gap-4 max-w-7xl w-full mx-auto px-4'>
+        <div className="w-full lg:w-auto lg:max-w-md bg-white rounded-lg p-8 border flex-shrink-0">
           <h1 className="text-2xl mb-4 text-bold">Editar Conta</h1>
 
           <div className="mb-4">
@@ -98,6 +104,36 @@ const ProfileEditComponent = ({ params }) => {
               className="border rounded py-2 px-3 w-full focus:outline-none focus:border-blue-400"
               required
               disabled
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="cpf" className="block text-gray-700 text-sm font-bold mb-2">CPF:</label>
+            <input
+              type="text"
+              id="cpf"
+              name="cpf"
+              value={formData.cpf || ''}
+              onChange={handleChange}
+              placeholder="000.000.000-00"
+              className="border rounded py-2 px-3 w-full focus:outline-none focus:border-blue-400"
+              required
+              disabled={isPending}
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Telefone:</label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formData.phone || ''}
+              onChange={handleChange}
+              placeholder="(00) 00000-0000"
+              className="border rounded py-2 px-3 w-full focus:outline-none focus:border-blue-400"
+              required
+              disabled={isPending}
             />
           </div>
 
@@ -189,14 +225,13 @@ const ProfileEditComponent = ({ params }) => {
               className="border rounded py-2 px-3 w-full focus:outline-none focus:border-blue-400"
             />
           </div>
-          <div className='flex justify-between mt-8 gap-8'>
+          <div className='flex justify-center mt-8'>
             <button className="flex border rounded-lg w-max px-4 py-2 bg-black text-white border-black duration-300 hover:bg-transparent hover:text-black" onClick={handleOnSave} type="submit" disabled={isPending}>Salvar</button>
-            <button className='flex border rounded-lg w-max px-4 py-2 bg-black text-white border-black duration-300 hover:bg-transparent hover:text-black' onClick={() => signOut()} disabled={isPending}>Fazer logout</button>
           </div>
 
         </div>
        
-        <div className="mx-auto bg-white rounded-lg p-8 border w-full">
+        <div className="w-full bg-white rounded-lg p-8 border overflow-hidden">
           <UserOrders userId={session.user.id} className={""}/>
         </div>
       </div>
@@ -207,7 +242,7 @@ const ProfileEditComponent = ({ params }) => {
       <div className='flex my-10'>
         <div className="max-w-md mx-auto bg-white rounded-lg p-8 border flex flex-col items-center gap-4">
           <p>Você precisa estar logado para ver seus pedidos</p>
-          <button onClick={() => signIn()} className='flex border rounded-lg w-max px-4 py-2 bg-black text-white border-black duration-300 hover:bg-transparent hover:text-black'>Fazer login</button>
+          <button onClick={() => signIn()} className='flex border rounded-lg w-max px-4 py-2 bg-black text-white border-black duration-300 hover:bg-transparent hover:text-black'>Login</button>
         </div>
       </div>
     )
